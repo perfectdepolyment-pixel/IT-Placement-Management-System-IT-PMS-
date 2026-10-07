@@ -133,162 +133,196 @@ export const PostDriveModal: React.FC<PostDriveModalProps> = ({ isOpen, onClose 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
           
-          {/* Company & Role */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Company Name
-              </label>
-              <input
-                type="text"
-                required
-                value={companyName}
-                onChange={e => setCompanyName(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Role Title
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Cloud Solutions Architect / SDE-1"
-                value={roleTitle}
-                onChange={e => setRoleTitle(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Employment Type
-              </label>
-              <select
-                value={jobType}
-                onChange={e => setJobType(e.target.value as any)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-              >
-                <option value="Full-Time">Full-Time (FTE)</option>
-                <option value="Internship">Internship Only</option>
-                <option value="Intern + Full-Time">Intern + Full-Time</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Package / CTC (Annual)
-              </label>
-              <div className="flex gap-2">
+          {/* Section 1: Company & Role Information */}
+          <div className="space-y-3">
+            <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider pb-1 border-b border-slate-100 dark:border-[#24304A]">
+              1. Company & Role Information
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="post-company-name" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Company Name <span className="text-rose-500">*</span>
+                </label>
                 <input
+                  id="post-company-name"
                   type="text"
                   required
-                  placeholder="e.g. 21.5 LPA"
-                  value={ctc}
-                  onChange={e => setCtc(e.target.value)}
-                  className="w-2/3 px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                  value={companyName}
+                  onChange={e => setCompanyName(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
                 />
-                <input
-                  type="number"
-                  step="0.5"
-                  placeholder="Num (LPA)"
-                  value={ctcValueLpa}
-                  onChange={e => setCtcValueLpa(parseFloat(e.target.value) || 0)}
-                  className="w-1/3 px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-                />
+                <span className="text-[10px] text-slate-400 mt-1 block">Registered recruiting corporate entity.</span>
               </div>
-            </div>
 
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Job Locations (Comma separated)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Bengaluru, Hyderabad, Pune"
-                value={locations}
-                onChange={e => setLocations(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-              />
-            </div>
+              <div>
+                <label htmlFor="post-role-title" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Role Title <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="post-role-title"
+                  type="text"
+                  required
+                  placeholder="e.g. Cloud Solutions Architect / SDE-1"
+                  value={roleTitle}
+                  onChange={e => setRoleTitle(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">Full designation offered to graduates.</span>
+              </div>
 
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Estimated Vacancies
-              </label>
-              <input
-                type="number"
-                min="1"
-                value={totalVacancies}
-                onChange={e => setTotalVacancies(parseInt(e.target.value) || 1)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-              />
+              <div>
+                <label htmlFor="post-job-type" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Employment Type <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  id="post-job-type"
+                  value={jobType}
+                  onChange={e => setJobType(e.target.value as any)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                >
+                  <option value="Full-Time">Full-Time (FTE)</option>
+                  <option value="Internship">Internship Only</option>
+                  <option value="Intern + Full-Time">Intern + Full-Time</option>
+                </select>
+                <span className="text-[10px] text-slate-400 mt-1 block">Nature of campus employment offer.</span>
+              </div>
+
+              <div>
+                <label htmlFor="post-ctc" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Package / CTC (Annual) <span className="text-rose-500">*</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="post-ctc"
+                    type="text"
+                    required
+                    placeholder="e.g. 21.5 LPA"
+                    value={ctc}
+                    onChange={e => setCtc(e.target.value)}
+                    className="w-2/3 px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                  />
+                  <input
+                    id="post-ctc-value"
+                    type="number"
+                    step="0.5"
+                    placeholder="Num (LPA)"
+                    value={ctcValueLpa}
+                    onChange={e => setCtcValueLpa(parseFloat(e.target.value) || 0)}
+                    className="w-1/3 px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                    aria-label="Numerical CTC in LPA"
+                  />
+                </div>
+                <span className="text-[10px] text-slate-400 mt-1 block">Format: "21.5 LPA", and numeric value for sorting.</span>
+              </div>
+
+              <div>
+                <label htmlFor="post-locations" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Job Locations (Comma separated)
+                </label>
+                <input
+                  id="post-locations"
+                  type="text"
+                  placeholder="e.g. Bengaluru, Hyderabad, Pune"
+                  value={locations}
+                  onChange={e => setLocations(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">Office locations or Remote/Hybrid options.</span>
+              </div>
+
+              <div>
+                <label htmlFor="post-vacancies" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Estimated Vacancies
+                </label>
+                <input
+                  id="post-vacancies"
+                  type="number"
+                  min="1"
+                  value={totalVacancies}
+                  onChange={e => setTotalVacancies(parseInt(e.target.value) || 1)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">Anticipated headcount hires for this drive.</span>
+              </div>
             </div>
           </div>
 
-          {/* Institutional Eligibility Cutoffs */}
+          {/* Section 2: Institutional Eligibility Cutoffs */}
           <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] space-y-3">
-            <h4 className="font-bold text-slate-900 dark:text-white">
-              Institutional Eligibility Criteria Rules
+            <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider pb-1 border-b border-slate-200/60 dark:border-[#24304A]">
+              2. Institutional Eligibility Cutoffs
             </h4>
             
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                  Min. CGPA
+                <label htmlFor="post-min-cgpa" className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Min. CGPA <span className="text-rose-500">*</span>
                 </label>
                 <input
+                  id="post-min-cgpa"
                   type="number"
                   step="0.1"
+                  min="0"
+                  max="10"
                   value={minCgpa}
                   onChange={e => setMinCgpa(parseFloat(e.target.value) || 0)}
                   className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
                 />
+                <span className="text-[10px] text-slate-400 mt-1 block">Out of 10.0 scale</span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                  Max Backlogs
+                <label htmlFor="post-max-backlogs" className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Max Backlogs <span className="text-rose-500">*</span>
                 </label>
                 <input
+                  id="post-max-backlogs"
                   type="number"
+                  min="0"
                   value={maxBacklogsAllowed}
                   onChange={e => setMaxBacklogsAllowed(parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
                 />
+                <span className="text-[10px] text-slate-400 mt-1 block">0 = strict clear</span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                  Min. 10th %
+                <label htmlFor="post-tenth-pct" className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Min. 10th % <span className="text-rose-500">*</span>
                 </label>
                 <input
+                  id="post-tenth-pct"
                   type="number"
+                  min="0"
+                  max="100"
                   value={minTenthPercent}
                   onChange={e => setMinTenthPercent(parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
                 />
+                <span className="text-[10px] text-slate-400 mt-1 block">Board marks cutoff</span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                  Min. 12th %
+                <label htmlFor="post-twelfth-pct" className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Min. 12th % <span className="text-rose-500">*</span>
                 </label>
                 <input
+                  id="post-twelfth-pct"
                   type="number"
+                  min="0"
+                  max="100"
                   value={minTwelfthPercent}
                   onChange={e => setMinTwelfthPercent(parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
                 />
+                <span className="text-[10px] text-slate-400 mt-1 block">Board marks cutoff</span>
               </div>
             </div>
 
             {/* Eligible Branches Checkboxes */}
             <div className="pt-2">
               <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Eligible Campus Departments
+                Eligible Campus Departments <span className="text-rose-500">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
@@ -313,40 +347,50 @@ export const PostDriveModal: React.FC<PostDriveModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* Dates */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Application Deadline
-              </label>
-              <input
-                type="date"
-                required
-                value={deadline}
-                onChange={e => setDeadline(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Drive Commencement Date
-              </label>
-              <input
-                type="date"
-                required
-                value={driveDate}
-                onChange={e => setDriveDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
-              />
+          {/* Section 3: Dates */}
+          <div className="space-y-3">
+            <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider pb-1 border-b border-slate-100 dark:border-[#24304A]">
+              3. Registration & Schedule Dates
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="post-deadline" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Application Deadline <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="post-deadline"
+                  type="date"
+                  required
+                  value={deadline}
+                  onChange={e => setDeadline(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">Last date for verified students to apply.</span>
+              </div>
+              <div>
+                <label htmlFor="post-drive-date" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Drive Commencement Date <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="post-drive-date"
+                  type="date"
+                  required
+                  value={driveDate}
+                  onChange={e => setDriveDate(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#141f36] border border-slate-200 dark:border-[#24304A] rounded-xl text-slate-900 dark:text-white"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">Date when online assessment or interviews start.</span>
+              </div>
             </div>
           </div>
 
-          {/* Selection Rounds */}
+          {/* Section 4: Selection Rounds */}
           <div className="space-y-3">
+            <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider pb-1 border-b border-slate-100 dark:border-[#24304A]">
+              4. Selection Process & Rounds
+            </h4>
             <div className="flex items-center justify-between">
-              <label className="font-bold text-slate-900 dark:text-white">
-                Selection Process & Rounds
-              </label>
+              <span className="text-xs text-slate-500">Configure round sequences</span>
               <button
                 type="button"
                 onClick={handleAddRound}

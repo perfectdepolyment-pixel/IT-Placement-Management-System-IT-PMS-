@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Application, ApplicationStatus } from '../../types';
 import { StatusBadge } from '../common/StatusBadge';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 import { 
   Users2, 
   Search, 
@@ -41,6 +42,7 @@ export const ApplicantPipeline: React.FC = () => {
   const [reviewCandidate, setReviewCandidate] = useState<Application | null>(null);
   const [scheduleModalApp, setScheduleModalApp] = useState<Application | null>(null);
   const [offerModalApp, setOfferModalApp] = useState<Application | null>(null);
+  const [rejectCandidateApp, setRejectCandidateApp] = useState<Application | null>(null);
 
   // Schedule Interview form state
   const [interviewRoundName, setInterviewRoundName] = useState('Technical Round 1');
@@ -333,9 +335,10 @@ export const ApplicantPipeline: React.FC = () => {
 
                           {app.status !== 'rejected' && app.status !== 'selected' && (
                             <button
-                              onClick={() => updateApplicationStatus(app.id, 'rejected')}
+                              onClick={() => setRejectCandidateApp(app)}
                               className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
                               title="Reject Application"
+                              aria-label="Reject candidate application"
                             >
                               <XCircle className="w-4 h-4" />
                             </button>
@@ -717,6 +720,24 @@ export const ApplicantPipeline: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Reject Candidate Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!rejectCandidateApp}
+        onConfirm={() => {
+          if (rejectCandidateApp) {
+            updateApplicationStatus(rejectCandidateApp.id, 'rejected');
+            setRejectCandidateApp(null);
+          }
+        }}
+        onCancel={() => setRejectCandidateApp(null)}
+        title="Reject Candidate Application"
+        message={`Are you sure you want to mark ${rejectCandidateApp?.studentName}'s application for ${rejectCandidateApp?.roleTitle} as Rejected? This action cannot be undone.`}
+        confirmLabel="Confirm Rejection"
+        cancelLabel="Keep in Pipeline"
+        isDestructive={true}
+        type="reject"
+      />
     </div>
   );
 };

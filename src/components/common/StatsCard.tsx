@@ -1,5 +1,6 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+import { CountUp } from './CountUp';
 
 interface StatsCardProps {
   title: string;
@@ -58,7 +59,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
             {title}
           </p>
           <h4 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1.5 tracking-tight">
-            {value}
+            <CountUp value={value} />
           </h4>
         </div>
         <div className={`p-3 rounded-xl shrink-0 ${schemeClasses.bg} ${schemeClasses.icon}`}>

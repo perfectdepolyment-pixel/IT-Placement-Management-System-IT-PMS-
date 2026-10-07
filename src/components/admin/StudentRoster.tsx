@@ -10,8 +10,12 @@ import {
   Clock, 
   FileSpreadsheet, 
   Building2,
-  Award
+  Award,
+  TrendingUp,
+  Users
 } from 'lucide-react';
+import { CountUp } from '../common/CountUp';
+import { EmptyState } from '../common/EmptyState';
 
 interface StudentRosterItem {
   id: string;
@@ -171,9 +175,14 @@ export const StudentRoster: React.FC = () => {
     showToast({ type: 'success', title: 'Roster Exported', message: 'CSV report downloaded successfully.' });
   };
 
+  const totalStudents = sampleStudents.length;
+  const placedStudents = sampleStudents.filter(s => s.placementStatus === 'Placed').length;
+  const inProcessStudents = sampleStudents.filter(s => s.placementStatus === 'In Process').length;
+  const placementRate = ((placedStudents / totalStudents) * 100).toFixed(1);
+
   return (
     <div className="space-y-6 animate-in fade-in">
-      {/* Header */}
+      {/* 5.3 Page title and primary action sit at the top */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -184,16 +193,52 @@ export const StudentRoster: React.FC = () => {
           </p>
         </div>
 
+        {/* Primary CTA on the right side of the header */}
         <button
           onClick={handleExportCSV}
-          className="self-start sm:self-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs flex items-center gap-2 transition-colors"
+          className="self-start sm:self-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs flex items-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           <FileSpreadsheet className="w-4 h-4" />
           <span>Export Master CSV</span>
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
+      {/* 5.3 Summary numbers come before detailed tables */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-4 rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs">
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Cohort</span>
+          <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+            <CountUp value={totalStudents} />
+          </p>
+          <span className="text-[11px] text-slate-400">Graduating Batch 2026</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs">
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Placed Candidates</span>
+          <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+            <CountUp value={placedStudents} />
+          </p>
+          <span className="text-[11px] text-emerald-600/80 font-medium">Verified Job Offers</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs">
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">In Process</span>
+          <p className="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1">
+            <CountUp value={inProcessStudents} />
+          </p>
+          <span className="text-[11px] text-sky-600/80 font-medium">Interviewing</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs">
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Placement Rate</span>
+          <p className="text-2xl font-extrabold text-blue-600 dark:text-blue-400 mt-1">
+            <CountUp value={`${placementRate}%`} />
+          </p>
+          <span className="text-[11px] text-blue-600/80 font-medium">Institutional Target: 90%+</span>
+        </div>
+      </div>
+
+      {/* 5.3 Filters sit above lists, never below */}
       <div className="p-4 rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
           <div className="md:col-span-2 relative">
@@ -245,7 +290,7 @@ export const StudentRoster: React.FC = () => {
                 setDepartmentFilter('all');
                 setStatusFilter('all');
               }}
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
             >
               Clear filters
             </button>
@@ -253,87 +298,168 @@ export const StudentRoster: React.FC = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-slate-50/70 dark:bg-[#141f36] border-b border-slate-100 dark:border-[#24304A] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                <th className="py-3.5 px-4">Roll No</th>
-                <th className="py-3.5 px-4">Student</th>
-                <th className="py-3.5 px-4">Department</th>
-                <th className="py-3.5 px-4">CGPA</th>
-                <th className="py-3.5 px-4">Backlogs</th>
-                <th className="py-3.5 px-4">Placement Status</th>
-                <th className="py-3.5 px-4">Company / Offer</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-[#24304A]">
-              {filteredStudents.map(student => (
-                <tr key={student.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-semibold text-slate-700 dark:text-slate-300">
-                    {student.rollNo}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="font-bold text-slate-900 dark:text-white block">
+      {filteredStudents.length === 0 ? (
+        /* Empty State */
+        <EmptyState
+          icon={GraduationCap}
+          title="No Students Match Current Filters"
+          description="We couldn't find any student matching your query. Try resetting filters to view the full institutional roster."
+          actionLabel="Reset All Filters"
+          onAction={() => {
+            setSearchQuery('');
+            setDepartmentFilter('all');
+            setStatusFilter('all');
+          }}
+        />
+      ) : (
+        <>
+          {/* 5.5 Table Rules: Sticky header, row hover highlight. On mobile, tables convert to stacked cards. */}
+          {/* Mobile view: Stacked Cards (visible < md) */}
+          <div className="md:hidden space-y-3">
+            {filteredStudents.map(student => (
+              <div
+                key={student.id}
+                className="p-4 rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="font-bold text-sm text-slate-900 dark:text-white block">
                       {student.name}
                     </span>
-                    <span className="text-[11px] text-slate-400">
-                      10th: {student.tenthPercent}% · 12th: {student.twelfthPercent}%
+                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                      {student.rollNo} · {student.department}
                     </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300">
-                    {student.department}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="font-bold text-slate-900 dark:text-white px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800">
-                      {student.cgpa}
+                  </div>
+                  {student.placementStatus === 'Placed' ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                      <CheckCircle2 className="w-3 h-3" /> Placed
                     </span>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    {student.activeBacklogs === 0 ? (
-                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">0 Clear</span>
-                    ) : (
-                      <span className="text-rose-600 dark:text-rose-400 font-bold">{student.activeBacklogs} Active</span>
-                    )}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    {student.placementStatus === 'Placed' ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
-                        <CheckCircle2 className="w-3 h-3" /> Placed
-                      </span>
-                    ) : student.placementStatus === 'In Process' ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-200 dark:border-sky-800">
-                        <Clock className="w-3 h-3" /> In Process
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
-                        Unplaced
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    {student.company ? (
-                      <div>
-                        <strong className="text-slate-900 dark:text-white block font-semibold">
-                          {student.company}
-                        </strong>
-                        {student.package && (
-                          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                            {student.package}
+                  ) : student.placementStatus === 'In Process' ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800">
+                      <Clock className="w-3 h-3" /> In Process
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                      Unplaced
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-xs py-2 border-y border-slate-100 dark:border-[#24304A]">
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">CGPA</span>
+                    <strong className="text-slate-900 dark:text-white">{student.cgpa}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Backlogs</span>
+                    <span className={student.activeBacklogs === 0 ? 'text-emerald-600 font-medium' : 'text-rose-600 font-bold'}>
+                      {student.activeBacklogs}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">10th / 12th</span>
+                    <span className="text-slate-600 dark:text-slate-300">{student.tenthPercent}% / {student.twelfthPercent}%</span>
+                  </div>
+                </div>
+
+                {student.company && (
+                  <div className="text-xs flex items-center justify-between">
+                    <span className="text-slate-500">Offer / Pipeline:</span>
+                    <span className="font-bold text-slate-900 dark:text-white">
+                      {student.company} {student.package && <span className="text-emerald-600">({student.package})</span>}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table: Sticky header, max 7 columns, row hover highlight */}
+          <div className="hidden md:block rounded-2xl bg-white dark:bg-[#111A2E] border border-slate-200/80 dark:border-[#24304A] shadow-xs overflow-hidden">
+            <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead className="sticky top-0 z-10 bg-slate-50/95 dark:bg-[#141f36]/95 backdrop-blur-xs">
+                  <tr className="border-b border-slate-200 dark:border-[#24304A] text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
+                    <th className="py-3.5 px-4">Roll No</th>
+                    <th className="py-3.5 px-4">Student</th>
+                    <th className="py-3.5 px-4">Department</th>
+                    <th className="py-3.5 px-4">CGPA</th>
+                    <th className="py-3.5 px-4">Backlogs</th>
+                    <th className="py-3.5 px-4">Placement Status</th>
+                    <th className="py-3.5 px-4">Company / Offer</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-[#24304A]">
+                  {filteredStudents.map(student => (
+                    <tr 
+                      key={student.id} 
+                      className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors"
+                    >
+                      <td className="py-3.5 px-4 font-mono font-semibold text-slate-700 dark:text-slate-300">
+                        {student.rollNo}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="font-bold text-slate-900 dark:text-white block">
+                          {student.name}
+                        </span>
+                        <span className="text-[11px] text-slate-400">
+                          10th: {student.tenthPercent}% · 12th: {student.twelfthPercent}%
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300">
+                        {student.department}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="font-bold text-slate-900 dark:text-white px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800">
+                          {student.cgpa}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {student.activeBacklogs === 0 ? (
+                          <span className="text-emerald-600 dark:text-emerald-400 font-medium">0 Clear</span>
+                        ) : (
+                          <span className="text-rose-600 dark:text-rose-400 font-bold">{student.activeBacklogs} Active</span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {student.placementStatus === 'Placed' ? (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                            <CheckCircle2 className="w-3 h-3" /> Placed
+                          </span>
+                        ) : student.placementStatus === 'In Process' ? (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-200 dark:border-sky-800">
+                            <Clock className="w-3 h-3" /> In Process
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
+                            Unplaced
                           </span>
                         )}
-                      </div>
-                    ) : (
-                      <span className="text-slate-400">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {student.company ? (
+                          <div>
+                            <strong className="text-slate-900 dark:text-white block font-semibold">
+                              {student.company}
+                            </strong>
+                            {student.package && (
+                              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                {student.package}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

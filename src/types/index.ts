@@ -52,6 +52,13 @@ export interface Experience {
   description: string;
 }
 
+export interface SemesterScore {
+  semester: number;
+  sgpa: number;
+  credits: number;
+  passed: boolean;
+}
+
 export interface StudentProfile {
   id: string;
   userId: string;
@@ -61,12 +68,17 @@ export interface StudentProfile {
   avatar: string;
   rollNo: string;
   department: string;
+  course: string;
   batch: string;
+  passingYear: number;
   cgpa: number;
   activeBacklogs: number;
   historyOfBacklogs: number;
   tenthPercent: number;
   twelfthPercent: number;
+  dateOfBirth?: string;
+  gender?: string;
+  address?: string;
   githubUrl?: string;
   linkedinUrl?: string;
   portfolioUrl?: string;
@@ -77,11 +89,14 @@ export interface StudentProfile {
     tools: string[];
     core: string[];
   };
+  semesterScores: SemesterScore[];
   projects: Project[];
   experiences: Experience[];
   certifications: string[];
   preferredLocations: string[];
   resumeLastUpdated: string;
+  resumeTemplate: 'modern' | 'classic' | 'minimalist';
+  savedDriveIds: string[];
   isPlaced: boolean;
   placedCompany?: string;
   placedPackage?: string;
@@ -141,6 +156,7 @@ export interface OfferDetails {
   offerLetterRef: string;
   accepted: boolean;
   acceptedAt?: string;
+  status?: 'Pending' | 'Accepted' | 'Declined';
 }
 
 export interface Application {
@@ -176,7 +192,7 @@ export interface Announcement {
   title: string;
   content: string;
   type: 'urgent' | 'drive_update' | 'general' | 'result';
-  targetAudience: 'all' | 'students' | 'recruiters';
+  targetAudience: 'all' | 'students' | 'recruiters' | 'Computer Science' | 'Information Technology';
   createdAt: string;
   authorName: string;
   authorRole: string;
@@ -190,8 +206,15 @@ export interface NotificationItem {
   message: string;
   type: 'drive' | 'application' | 'interview' | 'offer' | 'system';
   timestamp: string;
+  dateGroup?: 'Today' | 'Earlier';
   read: boolean;
   actionUrl?: string;
+}
+
+export interface CompanyPastHiring {
+  year: string;
+  count: number;
+  avgPackage: string;
 }
 
 export interface Company {
@@ -206,6 +229,15 @@ export interface Company {
   totalHired: number;
   highestPackage: string;
   tier: 'Dream' | 'Tier-1' | 'Tier-2' | 'Mass';
+  aboutLong?: string;
+  rolesOffered?: string[];
+  pastHiringStats?: CompanyPastHiring[];
+  hrContact?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  status?: 'Pending' | 'Approved' | 'Blocked';
 }
 
 export interface PlacementStat {
@@ -218,4 +250,36 @@ export interface PlacementStat {
   medianCtcLpa: number;
   totalOffers: number;
   totalCompanies: number;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  email: string;
+  phone: string;
+  photo: string;
+  department: string;
+}
+
+export interface Milestone {
+  year: string;
+  title: string;
+  description: string;
+}
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+  category: 'Students' | 'Recruiters' | 'Policies' | 'General';
+}
+
+export interface PendingApproval {
+  id: string;
+  type: 'student' | 'recruiter' | 'drive';
+  title: string;
+  subtitle: string;
+  details: string;
+  submittedAt: string;
+  status: 'pending' | 'approved' | 'rejected';
 }

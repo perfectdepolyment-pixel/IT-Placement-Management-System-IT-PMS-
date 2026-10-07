@@ -9,7 +9,8 @@ import {
   Announcement, 
   NotificationItem, 
   Company, 
-  ApplicationStatus 
+  ApplicationStatus,
+  PendingApproval
 } from '../types';
 import { 
   INITIAL_USERS, 
@@ -18,7 +19,8 @@ import {
   INITIAL_APPLICATIONS, 
   INITIAL_ANNOUNCEMENTS, 
   INITIAL_NOTIFICATIONS, 
-  INITIAL_COMPANIES 
+  INITIAL_COMPANIES,
+  PENDING_APPROVALS 
 } from '../data/mockData';
 
 export interface EligibilityResult {
@@ -48,10 +50,20 @@ interface AppContextType {
   loginAs: (userId: string) => void;
   logout: () => void;
   
-  // Student Profile
+  // Routing
+  currentRoute: string;
+  navigate: (path: string) => void;
+  activeDriveId: string | null;
+  setActiveDriveId: (id: string | null) => void;
+
+  // Student Profile & Resume
   studentProfile: StudentProfile;
   updateStudentProfile: (profile: Partial<StudentProfile>) => void;
-  
+  resumeTemplate: 'modern' | 'classic' | 'minimalist';
+  setResumeTemplate: (template: 'modern' | 'classic' | 'minimalist') => void;
+  toggleSaveDrive: (driveId: string) => void;
+  isDriveSaved: (driveId: string) => boolean;
+
   // Drives
   drives: RecruitmentDrive[];
   addDrive: (drive: Omit<RecruitmentDrive, 'id' | 'createdAt' | 'applicantCount'>) => void;
@@ -60,7 +72,7 @@ interface AppContextType {
   
   // Applications
   applications: Application[];
-  applyToDrive: (driveId: string) => boolean;
+  applyToDrive: (driveId: string, coverNote?: string) => boolean;
   withdrawApplication: (applicationId: string) => void;
   updateApplicationStatus: (applicationId: string, status: ApplicationStatus, feedback?: string) => void;
   scheduleInterview: (
@@ -96,6 +108,11 @@ interface AppContextType {
   // Companies
   companies: Company[];
 
+  // Pending Approvals
+  pendingApprovals: PendingApproval[];
+  approvePendingItem: (id: string) => void;
+  rejectPendingItem: (id: string) => void;
+
   // Active view routing inside dashboard
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -114,12 +131,14 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 const STORAGE_KEYS = {
   USER: 'it_pms_user',
   ROLE: 'it_pms_role',
+  ROUTE: 'it_pms_route',
   DARK_MODE: 'it_pms_theme_dark',
   PROFILE: 'it_pms_profile',
   DRIVES: 'it_pms_drives',
   APPLICATIONS: 'it_pms_applications',
   ANNOUNCEMENTS: 'it_pms_announcements',
   NOTIFICATIONS: 'it_pms_notifications',
+  APPROVALS: 'it_pms_approvals',
 };
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -154,11 +173,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return match || null;
   });
 
+  // Routing State
+  const [currentRoute, setCurrentRoute] = useState<string>(() => {
+    if (typeof window !== 'undefined' && window.location.pathname && window.location.pathname !== '/') {
+      return window.location.pathname;
+    }
+    const saved = localStorage.getItem(STORAGE_KEYS.ROUTE);
+    return saved || '/';
+  });
+
+  const [activeDriveId, setActiveDriveId] = useState<string | null>(null);
+
   // Profile State
   const [studentProfile, setStudentProfile] = useState<StudentProfile>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.PROFILE);
     return saved ? JSON.parse(saved) : INITIAL_STUDENT_PROFILE;
   });
+
+  // Resume Template
+  const [resumeTemplate, setResumeTemplate] = useState<'modern' | 'classic' | 'minimalist'>(
+    studentProfile.resumeTemplate || 'modern'
+  );
 
   // Drives State
   const [drives, setDrives] = useState<RecruitmentDrive[]>(() => {
@@ -184,10 +219,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
   });
 
+  // Pending Approvals
+  const [pendingApprovals, setPendingApprovals] = useState<PendingApproval[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.APPROVALS);
+    return saved ? JSON.parse(saved) : PENDING_APPROVALS;
+  });
+
   // Companies (Static or pre-loaded)
   const [companies] = useState<Company[]>(INITIAL_COMPANIES);
 
-  // Active Tab
+  // Active Tab for sidebar inside dashboard
   const [activeTab, setActiveTab] = useState<string>('overview');
 
   // Toasts
@@ -211,6 +252,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [currentRole]);
 
   useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ROUTE, currentRoute);
+  }, [currentRoute]);
+
+  useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(studentProfile));
   }, [studentProfile]);
 
@@ -230,22 +275,88 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
   }, [notifications]);
 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.APPROVALS, JSON.stringify(pendingApprovals));
+  }, [pendingApprovals]);
+
+  // Navigate helper with history pushState
+  const navigate = (path: string) => {
+    setCurrentRoute(path);
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', path);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Auto synchronize role if path belongs to a specific portal
+    if (path.startsWith('/student')) {
+      if (currentRole !== 'student') {
+        const studentUser = INITIAL_USERS.find(u => u.role === 'student');
+        setCurrentRoleState('student');
+        setCurrentUser(studentUser || null);
+      }
+      const segment = path.replace('/student/', '').replace('/student', '');
+      setActiveTab(segment || 'dashboard');
+    } else if (path.startsWith('/recruiter')) {
+      if (currentRole !== 'recruiter') {
+        const recruiterUser = INITIAL_USERS.find(u => u.role === 'recruiter');
+        setCurrentRoleState('recruiter');
+        setCurrentUser(recruiterUser || null);
+      }
+      const segment = path.replace('/recruiter/', '').replace('/recruiter', '');
+      setActiveTab(segment || 'dashboard');
+    } else if (path.startsWith('/admin')) {
+      if (currentRole !== 'admin') {
+        const adminUser = INITIAL_USERS.find(u => u.role === 'admin');
+        setCurrentRoleState('admin');
+        setCurrentUser(adminUser || null);
+      }
+      const segment = path.replace('/admin/', '').replace('/admin', '');
+      setActiveTab(segment || 'dashboard');
+    } else {
+      // Public pages
+      if (['/', '/about', '/companies', '/statistics', '/contact', '/login', '/register', '/forgot-password', '/reset-password'].includes(path)) {
+        if (!currentUser) {
+          setCurrentRoleState('visitor');
+        }
+      }
+    }
+  };
+
+  // Listen to popstate (browser back/forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRoute(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Role switching
   const setCurrentRole = (role: UserRole) => {
     setCurrentRoleState(role);
     if (role === 'visitor') {
       setCurrentUser(null);
+      setCurrentRoute('/');
       setActiveTab('home');
       showToast({ type: 'info', title: 'Browsing as Visitor', message: 'You are now viewing the public campus recruitment portal.' });
-    } else {
-      const matched = INITIAL_USERS.find(u => u.role === role);
+    } else if (role === 'student') {
+      const matched = INITIAL_USERS.find(u => u.role === 'student');
       setCurrentUser(matched || null);
-      setActiveTab('overview');
-      showToast({ 
-        type: 'success', 
-        title: `Switched to ${role.toUpperCase()} View`, 
-        message: matched ? `Logged in as ${matched.name}` : undefined 
-      });
+      setCurrentRoute('/student/dashboard');
+      setActiveTab('dashboard');
+      showToast({ type: 'success', title: 'Student Portal Active', message: `Logged in as ${matched?.name}` });
+    } else if (role === 'recruiter') {
+      const matched = INITIAL_USERS.find(u => u.role === 'recruiter');
+      setCurrentUser(matched || null);
+      setCurrentRoute('/recruiter/dashboard');
+      setActiveTab('dashboard');
+      showToast({ type: 'success', title: 'Recruiter Hub Active', message: `Logged in as ${matched?.name}` });
+    } else if (role === 'admin') {
+      const matched = INITIAL_USERS.find(u => u.role === 'admin');
+      setCurrentUser(matched || null);
+      setCurrentRoute('/admin/dashboard');
+      setActiveTab('dashboard');
+      showToast({ type: 'success', title: 'TPO Director Portal Active', message: `Logged in as ${matched?.name}` });
     }
   };
 
@@ -254,7 +365,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (user) {
       setCurrentUser(user);
       setCurrentRoleState(user.role);
-      setActiveTab('overview');
+      if (user.role === 'student') {
+        navigate('/student/dashboard');
+      } else if (user.role === 'recruiter') {
+        navigate('/recruiter/dashboard');
+      } else if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      }
       showToast({ type: 'success', title: `Welcome back, ${user.name}!`, message: `Logged in as ${user.role}` });
     }
   };
@@ -262,7 +379,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const logout = () => {
     setCurrentRoleState('visitor');
     setCurrentUser(null);
-    setActiveTab('home');
+    navigate('/');
     showToast({ type: 'info', title: 'Logged out', message: 'Returned to visitor portal.' });
   };
 
@@ -274,6 +391,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       resumeLastUpdated: new Date().toISOString().split('T')[0],
     }));
     showToast({ type: 'success', title: 'Profile Updated', message: 'Your student details and resume are saved.' });
+  };
+
+  // Toggle Save Drive
+  const toggleSaveDrive = (driveId: string) => {
+    setStudentProfile(prev => {
+      const saved = prev.savedDriveIds || [];
+      const isSaved = saved.includes(driveId);
+      const nextSaved = isSaved ? saved.filter(id => id !== driveId) : [...saved, driveId];
+      showToast({
+        type: 'info',
+        title: isSaved ? 'Removed from Saved' : 'Drive Bookmarked',
+        message: isSaved ? 'Removed from your saved drives' : 'Saved to your bookmarked drives list',
+      });
+      return { ...prev, savedDriveIds: nextSaved };
+    });
+  };
+
+  const isDriveSaved = (driveId: string) => {
+    return (studentProfile.savedDriveIds || []).includes(driveId);
   };
 
   // Drives operations
@@ -303,7 +439,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       title: `New Drive: ${newDrive.companyName}`,
       message: `${newDrive.roleTitle} (${newDrive.ctc}) has opened registrations.`,
       type: 'drive',
-      actionUrl: 'drives',
+      actionUrl: '/student/drives',
     });
 
     showToast({ type: 'success', title: 'Drive Created', message: `${newDrive.companyName} drive is now active for students.` });
@@ -371,7 +507,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   // Apply to drive
-  const applyToDrive = (driveId: string): boolean => {
+  const applyToDrive = (driveId: string, coverNote?: string): boolean => {
     const drive = drives.find(d => d.id === driveId);
     if (!drive) return false;
 
@@ -413,6 +549,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         roundName: r.name,
         roundIndex: idx,
         status: idx === 0 ? 'pending' : 'pending',
+        feedback: idx === 0 && coverNote ? `Applicant Note: "${coverNote}"` : undefined,
       })),
     };
 
@@ -422,8 +559,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     // Celebrate with confetti
     try {
       confetti({
-        particleCount: 80,
-        spread: 60,
+        particleCount: 90,
+        spread: 70,
         origin: { y: 0.7 },
         colors: ['#2563EB', '#7C3AED', '#10B981'],
       });
@@ -435,7 +572,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       title: `Applied to ${drive.companyName}`,
       message: `Your application for ${drive.roleTitle} has been submitted to recruiter.`,
       type: 'application',
-      actionUrl: 'applications',
+      actionUrl: '/student/applications',
     });
 
     showToast({ 
@@ -501,7 +638,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       title: 'Interview Scheduled',
       message: `Interview for ${details.roundName} scheduled on ${details.dateTime}.`,
       type: 'interview',
-      actionUrl: 'interviews',
+      actionUrl: '/student/interviews',
     });
 
     showToast({ type: 'success', title: 'Interview Scheduled', message: `Time slot booked for candidate.` });
@@ -520,6 +657,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           location,
           offerLetterRef: `OFFER-${Math.floor(100000 + Math.random() * 900000)}`,
           accepted: false,
+          status: 'Pending',
         },
       };
     }));
@@ -528,7 +666,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       title: 'Congratulations! Official Offer Received',
       message: `You have received an employment offer with CTC ${ctc}!`,
       type: 'offer',
-      actionUrl: 'applications',
+      actionUrl: '/student/applications',
     });
 
     showToast({ type: 'success', title: 'Offer Letter Issued', message: `Job offer generated and sent to candidate.` });
@@ -542,6 +680,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         offerDetails: {
           ...app.offerDetails,
           accepted: true,
+          status: 'Accepted',
           acceptedAt: new Date().toISOString().split('T')[0],
         },
       };
@@ -560,7 +699,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     try {
       confetti({
-        particleCount: 150,
+        particleCount: 160,
         spread: 100,
         origin: { y: 0.6 },
       });
@@ -591,6 +730,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, pinned: !a.pinned } : a));
   };
 
+  // Approvals operations
+  const approvePendingItem = (id: string) => {
+    setPendingApprovals(prev => prev.map(item => item.id === id ? { ...item, status: 'approved' as const } : item));
+    showToast({ type: 'success', title: 'Approved', message: 'Registration / drive verified and approved.' });
+  };
+
+  const rejectPendingItem = (id: string) => {
+    setPendingApprovals(prev => prev.map(item => item.id === id ? { ...item, status: 'rejected' as const } : item));
+    showToast({ type: 'info', title: 'Rejected', message: 'Submission rejected.' });
+  };
+
   // Notification operations
   const unreadNotifCount = notifications.filter(n => !n.read).length;
 
@@ -608,6 +758,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ...notif,
       id: `notif-${Date.now()}`,
       timestamp: 'Just now',
+      dateGroup: 'Today',
       read: false,
     };
     setNotifications(prev => [newItem, ...prev]);
@@ -621,9 +772,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setApplications(INITIAL_APPLICATIONS);
     setAnnouncements(INITIAL_ANNOUNCEMENTS);
     setNotifications(INITIAL_NOTIFICATIONS);
+    setPendingApprovals(PENDING_APPROVALS);
     setCurrentRoleState('student');
     setCurrentUser(INITIAL_USERS[0]);
-    setActiveTab('overview');
+    navigate('/student/dashboard');
     showToast({ type: 'info', title: 'Demo Data Reset', message: 'All drives, applications, and profiles restored to initial sample state.' });
   };
 
@@ -637,8 +789,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setCurrentRole,
         loginAs,
         logout,
+        currentRoute,
+        navigate,
+        activeDriveId,
+        setActiveDriveId,
         studentProfile,
         updateStudentProfile,
+        resumeTemplate,
+        setResumeTemplate,
+        toggleSaveDrive,
+        isDriveSaved,
         drives,
         addDrive,
         updateDrive,
@@ -661,6 +821,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         markAllNotificationsRead,
         addNotification,
         companies,
+        pendingApprovals,
+        approvePendingItem,
+        rejectPendingItem,
         activeTab,
         setActiveTab,
         toasts,

@@ -52,12 +52,17 @@ export const INITIAL_STUDENT_PROFILE: StudentProfile = {
   avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   rollNo: '22CS1048',
   department: 'Computer Science and Engineering',
+  course: 'Bachelor of Technology (B.Tech)',
   batch: '2022 - 2026',
+  passingYear: 2026,
   cgpa: 8.84,
   activeBacklogs: 0,
   historyOfBacklogs: 0,
   tenthPercent: 94.6,
   twelfthPercent: 92.4,
+  dateOfBirth: '2004-05-14',
+  gender: 'Male',
+  address: 'Block 4, Academic Green Residency, University Campus, New Delhi 110025',
   githubUrl: 'https://github.com/aryansharma',
   linkedinUrl: 'https://linkedin.com/in/aryansharma-dev',
   portfolioUrl: 'https://aryansharma.tech',
@@ -68,6 +73,16 @@ export const INITIAL_STUDENT_PROFILE: StudentProfile = {
     tools: ['Git', 'PostgreSQL', 'Redis', 'AWS (S3, EC2)', 'Figma', 'Linux'],
     core: ['Data Structures & Algorithms', 'Operating Systems', 'DBMS', 'Computer Networks', 'System Design'],
   },
+  semesterScores: [
+    { semester: 1, sgpa: 8.62, credits: 24, passed: true },
+    { semester: 2, sgpa: 8.75, credits: 24, passed: true },
+    { semester: 3, sgpa: 8.90, credits: 26, passed: true },
+    { semester: 4, sgpa: 9.05, credits: 26, passed: true },
+    { semester: 5, sgpa: 8.80, credits: 25, passed: true },
+    { semester: 6, sgpa: 9.12, credits: 25, passed: true },
+  ],
+  resumeTemplate: 'modern',
+  savedDriveIds: ['drive-ms-sde1', 'drive-google-swe'],
   projects: [
     {
       id: 'proj-1',
@@ -117,6 +132,19 @@ export const INITIAL_COMPANIES: Company[] = [
     website: 'https://careers.microsoft.com',
     location: 'Hyderabad, Bengaluru, Noida',
     description: 'Global tech leader creating platforms and solutions that empower every person and organization on the planet to achieve more.',
+    aboutLong: 'Microsoft Corporation is an American multinational technology corporation headquartered in Redmond, Washington. Microsoft India Development Center (IDC) in Hyderabad and Bengaluru is one of Microsoft’s largest R&D centers outside of Redmond. IDC builds core engineering features across Azure, Microsoft 365, Copilot AI, Windows Core, and Bing.',
+    rolesOffered: ['Software Development Engineer (SDE)', 'Product Manager Intern', 'Cloud Solution Architect', 'Data Scientist'],
+    pastHiringStats: [
+      { year: '2025', count: 18, avgPackage: '42.0 LPA' },
+      { year: '2024', count: 14, avgPackage: '40.5 LPA' },
+      { year: '2023', count: 10, avgPackage: '38.0 LPA' },
+    ],
+    hrContact: {
+      name: 'Priya Nair',
+      email: 'priya.nair@microsoft.com',
+      phone: '+91 98112 34567',
+    },
+    status: 'Approved',
     activeDrives: 2,
     totalHired: 42,
     highestPackage: '44.8 LPA',
@@ -130,6 +158,19 @@ export const INITIAL_COMPANIES: Company[] = [
     website: 'https://buildyourfuture.withgoogle.com',
     location: 'Bengaluru, Hyderabad',
     description: 'Pioneering artificial intelligence, planetary scale distributed systems, and modern digital productivity infrastructure.',
+    aboutLong: 'Google engineers develop next-generation technologies that change how billions of users connect, explore, and interact with information. The India engineering campus works on Search, YouTube, Android, Google Pay, and Google Cloud infrastructure.',
+    rolesOffered: ['Software Engineer - University Graduate', 'Silicon Design Engineer', 'Associate Product Manager', 'Data Analyst'],
+    pastHiringStats: [
+      { year: '2025', count: 8, avgPackage: '48.5 LPA' },
+      { year: '2024', count: 6, avgPackage: '46.0 LPA' },
+      { year: '2023', count: 4, avgPackage: '42.0 LPA' },
+    ],
+    hrContact: {
+      name: 'Ananya Sen',
+      email: 'university-india@google.com',
+      phone: '+91 98220 11223',
+    },
+    status: 'Approved',
     activeDrives: 1,
     totalHired: 18,
     highestPackage: '52.0 LPA',
@@ -143,6 +184,19 @@ export const INITIAL_COMPANIES: Company[] = [
     website: 'https://amazon.jobs',
     location: 'Bengaluru, Chennai, Hyderabad',
     description: 'Worlds most customer-centric cloud infrastructure and large-scale consumer e-commerce enterprise.',
+    aboutLong: 'Amazon Web Services (AWS) is the world’s most comprehensive and broadly adopted cloud platform. Campus engineers join teams building high-scale distributed compute, storage, databases, networking, analytics, and machine learning systems.',
+    rolesOffered: ['SDE-1', 'Cloud Support Associate', 'Operations Engineer', 'Quality Assurance Engineer'],
+    pastHiringStats: [
+      { year: '2025', count: 24, avgPackage: '36.5 LPA' },
+      { year: '2024', count: 20, avgPackage: '34.0 LPA' },
+      { year: '2023', count: 12, avgPackage: '30.0 LPA' },
+    ],
+    hrContact: {
+      name: 'Vikram Seth',
+      email: 'campus-recruiting@amazon.com',
+      phone: '+91 98450 77889',
+    },
+    status: 'Approved',
     activeDrives: 1,
     totalHired: 56,
     highestPackage: '38.0 LPA',
@@ -156,6 +210,19 @@ export const INITIAL_COMPANIES: Company[] = [
     website: 'https://atlassian.com/company/careers',
     location: 'Bengaluru (Remote First)',
     description: 'Creators of Jira, Confluence, Trello, and Bitbucket powering team agility across the globe.',
+    aboutLong: 'Atlassian makes team collaboration software like Jira, Confluence, and Trello. Operating on a remote-first work model across India, graduate engineers contribute to cloud architecture, microservices, and web experiences.',
+    rolesOffered: ['Graduate Software Engineer', 'Product Designer', 'Site Reliability Engineer'],
+    pastHiringStats: [
+      { year: '2025', count: 6, avgPackage: '42.0 LPA' },
+      { year: '2024', count: 5, avgPackage: '40.0 LPA' },
+      { year: '2023', count: 3, avgPackage: '37.5 LPA' },
+    ],
+    hrContact: {
+      name: 'Sarah Mathews',
+      email: 'smathews@atlassian.com',
+      phone: '+91 97110 33445',
+    },
+    status: 'Approved',
     activeDrives: 1,
     totalHired: 14,
     highestPackage: '42.5 LPA',
@@ -169,6 +236,19 @@ export const INITIAL_COMPANIES: Company[] = [
     website: 'https://cisco.com/careers',
     location: 'Bengaluru',
     description: 'Worldwide leader in cybersecurity, enterprise software networking, and IoT cloud connectivity.',
+    aboutLong: 'Cisco’s campus in Bengaluru is the largest R&D center outside of San Jose. Campus recruits develop network operating systems, cloud security, SD-WAN, and enterprise software.',
+    rolesOffered: ['Software Engineer - Systems', 'Technical Consulting Engineer', 'Security Analyst'],
+    pastHiringStats: [
+      { year: '2025', count: 28, avgPackage: '22.5 LPA' },
+      { year: '2024', count: 22, avgPackage: '20.0 LPA' },
+      { year: '2023', count: 14, avgPackage: '18.0 LPA' },
+    ],
+    hrContact: {
+      name: 'Ramesh Kulkarni',
+      email: 'university-apac@cisco.com',
+      phone: '+91 99880 55443',
+    },
+    status: 'Approved',
     activeDrives: 1,
     totalHired: 64,
     highestPackage: '24.0 LPA',
@@ -182,6 +262,19 @@ export const INITIAL_COMPANIES: Company[] = [
     website: 'https://deloitte.com/careers',
     location: 'Bengaluru, Hyderabad, Gurugram',
     description: 'Premier multinational professional services providing high-tier IT engineering and cloud consulting.',
+    aboutLong: 'Deloitte US-India offices deliver technology modernization, digital transformation, and cybersecurity solutions to global Fortune 500 corporations.',
+    rolesOffered: ['Analyst - Cloud Engineering', 'Cyber Risk Analyst', 'Enterprise Technology Consultant'],
+    pastHiringStats: [
+      { year: '2025', count: 42, avgPackage: '12.0 LPA' },
+      { year: '2024', count: 32, avgPackage: '10.5 LPA' },
+      { year: '2023', count: 18, avgPackage: '9.0 LPA' },
+    ],
+    hrContact: {
+      name: 'Pooja Bhatia',
+      email: 'usi-campus@deloitte.com',
+      phone: '+91 98770 11998',
+    },
+    status: 'Approved',
     activeDrives: 1,
     totalHired: 92,
     highestPackage: '12.5 LPA',
@@ -797,3 +890,143 @@ export const TESTIMONIALS = [
     quote: 'Being able to track application stages live and download an ATS-compliant resume directly from my verified college profile was an absolute game changer.',
   },
 ];
+
+export const TEAM_MEMBERS = [
+  {
+    id: 'team-1',
+    name: 'Dr. V. K. Raman',
+    role: 'Director - Training & Placement',
+    department: 'Corporate Relations & Placement Directorate',
+    email: 'tpo.director@college.edu',
+    phone: '+91 94250 88990',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
+  },
+  {
+    id: 'team-2',
+    name: 'Prof. Anjali Saxena',
+    role: 'Associate Dean - Student Careers',
+    department: 'Industry Relations & Corporate Outreach',
+    email: 'anjali.saxena@college.edu',
+    phone: '+91 94250 88992',
+    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80',
+  },
+  {
+    id: 'team-3',
+    name: 'Mr. Sandeep Roy',
+    role: 'Head of Industry Relations',
+    department: 'Corporate Partnerships & Sponsoring',
+    email: 'sandeep.roy@college.edu',
+    phone: '+91 98110 55667',
+    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
+  },
+  {
+    id: 'team-4',
+    name: 'Ms. Neha Gupta',
+    role: 'Senior Placement Officer',
+    department: 'Campus Recruitment Operations',
+    email: 'neha.gupta@college.edu',
+    phone: '+91 98110 55669',
+    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&auto=format&fit=crop&q=80',
+  },
+];
+
+export const MILESTONES = [
+  {
+    year: '2012',
+    title: 'Establishment of Placement Cell',
+    description: 'Autonomous Directorate of Career Services founded with dedicated interview chambers and pre-placement training.',
+  },
+  {
+    year: '2016',
+    title: 'Crossing 100+ Recruiter Milestone',
+    description: 'Over 100 national and international multinational companies conducted on-campus drives, reaching 80% placement rate.',
+  },
+  {
+    year: '2021',
+    title: 'Dream Tier Package Breakout',
+    description: 'First 40+ LPA international tech offers recorded with Google, Microsoft, and Amazon AWS campus recruitment drives.',
+  },
+  {
+    year: '2024',
+    title: 'Digital Transformation & Smart Portal',
+    description: 'Transitioned from spreadsheet based management to automated eligibility calculation and real-time candidate pipelines.',
+  },
+  {
+    year: '2026',
+    title: 'Record 94.2% Placement Season',
+    description: 'Over 712 offers generated with 52 LPA highest package and 14.8 LPA average package across engineering streams.',
+  },
+];
+
+export const FAQ_ITEMS = [
+  {
+    category: 'Students',
+    question: 'How is eligibility calculated for campus recruitment drives?',
+    answer: 'Eligibility is automatically computed in real-time by comparing your verified CGPA, 10th & 12th standard percentages, active backlogs, and academic department against the recruiter’s specific criteria. Only eligible students can click Apply.',
+  },
+  {
+    category: 'Students',
+    question: 'Can I apply for multiple companies at the same time?',
+    answer: 'Yes, students are allowed to participate in multiple ongoing recruitment drives until they accept a formal offer in accordance with the campus One-Student-One-Dream-Offer institutional placement policy.',
+  },
+  {
+    category: 'Students',
+    question: 'How do I generate an ATS-compliant resume from my profile?',
+    answer: 'Navigate to Profile & Resume in your student dashboard. Your verified academic records, projects, and skills are automatically rendered into standard ATS-compliant formats ready for single-click PDF export.',
+  },
+  {
+    category: 'Recruiters',
+    question: 'How do companies post campus recruitment drives?',
+    answer: 'Registered recruiters can log in, access the Recruiter Hub, and click "Post New Job". Define role compensation, criteria, and selection rounds. The Placement Cell reviews and approves the drive within 24 hours.',
+  },
+  {
+    category: 'Recruiters',
+    question: 'Can recruiters conduct virtual tests and Google Meet interviews through the portal?',
+    answer: 'Yes! The candidate pipeline supports round-by-round scheduling with meeting links, room numbers, panelist assignment, and instant candidate notifications.',
+  },
+  {
+    category: 'Policies',
+    question: 'What is the institutional Dream Package policy?',
+    answer: 'Offers exceeding 20.0 LPA are classified under the "Dream / Super Dream" category. Students holding standard offers are permitted to upgrade to a Dream category drive.',
+  },
+];
+
+export const PENDING_APPROVALS = [
+  {
+    id: 'appr-1',
+    type: 'recruiter' as const,
+    title: 'Adobe Systems India',
+    subtitle: 'Campus Recruitment Registration',
+    details: 'Requested HR account for University Talent Lead. Hiring for SDE-1 (36.0 LPA).',
+    submittedAt: 'Today, 10:30 AM',
+    status: 'pending' as const,
+  },
+  {
+    id: 'appr-2',
+    type: 'drive' as const,
+    title: 'NVIDIA Hardware & Systems',
+    subtitle: 'Graduate Silicon Engineer Drive',
+    details: 'Package: 28.5 LPA. Cutoff: 8.0 CGPA (ECE, CSE, EE). 12 Openings.',
+    submittedAt: 'Yesterday, 04:15 PM',
+    status: 'pending' as const,
+  },
+  {
+    id: 'appr-3',
+    type: 'student' as const,
+    title: 'Vikrant Saxena (22CS1092)',
+    subtitle: 'Profile Verification & CGPA Update',
+    details: 'Submitted verified 6th semester grade sheet with CGPA revision to 8.92.',
+    submittedAt: '2 days ago',
+    status: 'pending' as const,
+  },
+];
+
+export const TOP_OFFERS = [
+  { company: 'Google India', role: 'Software Engineer', package: '52.0 LPA', selectedCount: 8, tier: 'Dream' },
+  { company: 'Microsoft Corporation', role: 'Software Development Engineer', package: '44.8 LPA', selectedCount: 18, tier: 'Dream' },
+  { company: 'Atlassian', role: 'Graduate Software Engineer', package: '42.5 LPA', selectedCount: 10, tier: 'Dream' },
+  { company: 'Amazon Web Services', role: 'SDE-1 & Cloud Associate', package: '38.0 LPA', selectedCount: 25, tier: 'Dream' },
+  { company: 'Cisco Systems', role: 'Software Systems Engineer', package: '24.0 LPA', selectedCount: 30, tier: 'Tier-1' },
+  { company: 'Deloitte USI', role: 'Analyst - Cloud Engineering', package: '12.5 LPA', selectedCount: 50, tier: 'Tier-2' },
+];
+

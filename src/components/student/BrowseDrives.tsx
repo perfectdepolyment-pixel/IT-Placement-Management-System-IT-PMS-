@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { RecruitmentDrive } from '../../types';
 import { StatusBadge } from '../common/StatusBadge';
 import { DriveDetailModal } from './DriveDetailModal';
+import { EmptyState } from '../common/EmptyState';
 import { 
   Search, 
   Filter, 
@@ -15,7 +16,8 @@ import {
   Clock, 
   SlidersHorizontal,
   Building2,
-  ExternalLink
+  ExternalLink,
+  Briefcase
 } from 'lucide-react';
 
 export const BrowseDrives: React.FC = () => {
@@ -155,15 +157,18 @@ export const BrowseDrives: React.FC = () => {
 
       {/* Drives Grid */}
       {filteredDrives.length === 0 ? (
-        <div className="py-16 text-center bg-white dark:bg-[#111A2E] rounded-2xl border border-slate-200 dark:border-[#24304A]">
-          <SlidersHorizontal className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
-            No placement drives match your criteria
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Try adjusting your search terms or uncheck the eligibility filter.
-          </p>
-        </div>
+        <EmptyState
+          icon={Briefcase}
+          title="No Placement Drives Match Your Criteria"
+          description="Try adjusting your search terms, selecting different departments, or unchecking the strict eligibility filter."
+          actionLabel="Reset All Filters"
+          onAction={() => {
+            setSearchQuery('');
+            setSelectedBranch('all');
+            setSelectedJobType('all');
+            setOnlyEligible(false);
+          }}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredDrives.map(drive => {

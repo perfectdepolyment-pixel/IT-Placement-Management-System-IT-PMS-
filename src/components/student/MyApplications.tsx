@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Application, ApplicationStatus } from '../../types';
 import { StatusBadge } from '../common/StatusBadge';
+import { EmptyState } from '../common/EmptyState';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 import { 
   Building2, 
   Calendar, 
@@ -14,10 +16,11 @@ import {
   XCircle, 
   AlertCircle, 
   Download, 
-  ChevronRight,
-  ExternalLink,
-  Sparkles,
-  ShieldAlert
+  ChevronRight, 
+  ExternalLink, 
+  Sparkles, 
+  ShieldAlert,
+  Briefcase
 } from 'lucide-react';
 
 export const MyApplications: React.FC = () => {
@@ -25,6 +28,7 @@ export const MyApplications: React.FC = () => {
 
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [appToWithdraw, setAppToWithdraw] = useState<Application | null>(null);
 
   // Student's own applications
   const studentApps = applications.filter(a => a.studentId === studentProfile.userId);
@@ -103,21 +107,13 @@ export const MyApplications: React.FC = () => {
 
       {/* Applications List */}
       {filteredApps.length === 0 ? (
-        <div className="py-16 text-center bg-white dark:bg-[#111A2E] rounded-2xl border border-slate-200 dark:border-[#24304A]">
-          <Award className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
-            No applications found in this section
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
-            Explore active placement drives and submit your profile today.
-          </p>
-          <button
-            onClick={() => setActiveTab('drives')}
-            className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors"
-          >
-            View Available Drives
-          </button>
-        </div>
+        <EmptyState
+          icon={Briefcase}
+          title="No applications yet"
+          description="You have not submitted applications to any campus recruitment drives yet. Browse open drives and apply with verified eligibility."
+          actionLabel="Browse Drives"
+          onAction={() => setActiveTab('drives')}
+        />
       ) : (
         <div className="space-y-5">
           {filteredApps.map(app => {
@@ -160,11 +156,7 @@ export const MyApplications: React.FC = () => {
                   <div className="flex items-center gap-2 self-start md:self-auto">
                     {app.status !== 'withdrawn' && app.status !== 'selected' && (
                       <button
-                        onClick={() => {
-                          if (confirm(`Withdraw application for ${app.companyName}?`)) {
-                            withdrawApplication(app.id);
-                          }
-                        }}
+                        onClick={() => setAppToWithdraw(app)}
                         className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-[#24304A] transition-colors"
                       >
                         Withdraw
@@ -363,6 +355,24 @@ export const MyApplications: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* Confirmation Modal for application withdrawal */}
+      <ConfirmationModal
+        isOpen={!!appToWithdraw}
+        onConfirm={() => {
+          if (appToWithdraw) {
+            withdrawApplication(appToWithdraw.id);
+            setAppToWithdraw(null);
+          }
+        }}
+        onCancel={() => setAppToWithdraw(null)}
+        title="Withdraw Job Application"
+        message={`Are you sure you want to withdraw your application for ${appToWithdraw?.roleTitle} at ${appToWithdraw?.companyName}? This action is irreversible and your candidature will be removed.`}
+        confirmLabel="Withdraw Application"
+        cancelLabel="Keep Application"
+        isDestructive={true}
+        type="withdraw"
+      />
     </div>
   );
 };

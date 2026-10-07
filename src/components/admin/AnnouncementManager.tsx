@@ -12,6 +12,8 @@ import {
   Users, 
   X
 } from 'lucide-react';
+import { ConfirmationModal } from '../common/ConfirmationModal';
+import { EmptyState } from '../common/EmptyState';
 
 export const AnnouncementManager: React.FC = () => {
   const { 
@@ -26,6 +28,7 @@ export const AnnouncementManager: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [announcementToDelete, setAnnouncementToDelete] = useState<string | null>(null);
 
   // Form state
   const [title, setTitle] = useState('');
@@ -117,8 +120,20 @@ export const AnnouncementManager: React.FC = () => {
       </div>
 
       {/* Notices List */}
-      <div className="space-y-4">
-        {filteredAnnouncements.map(ann => {
+      {filteredAnnouncements.length === 0 ? (
+        <EmptyState
+          icon={Megaphone}
+          title="No circular notices found"
+          description="There are currently no circulars matching your active filter or search query. Try clearing filters or checking other categories."
+          actionLabel="Clear Filters"
+          onAction={() => {
+            setSearchQuery('');
+            setTypeFilter('all');
+          }}
+        />
+      ) : (
+        <div className="space-y-4">
+          {filteredAnnouncements.map(ann => {
           let badgeColor = 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300';
           if (ann.type === 'urgent') badgeColor = 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300';
           if (ann.type === 'result') badgeColor = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300';
@@ -172,9 +187,10 @@ export const AnnouncementManager: React.FC = () => {
                       <Pin className={`w-4 h-4 ${ann.pinned ? 'fill-blue-600 text-blue-600' : ''}`} />
                     </button>
                     <button
-                      onClick={() => deleteAnnouncement(ann.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                      onClick={() => setAnnouncementToDelete(ann.id)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       title="Delete notice"
+                      aria-label="Delete circular notice"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -189,6 +205,7 @@ export const AnnouncementManager: React.FC = () => {
           );
         })}
       </div>
+      )}
 
       {/* Modal: Publish Notice */}
       {isModalOpen && (
@@ -294,6 +311,24 @@ export const AnnouncementManager: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Notice Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!announcementToDelete}
+        onConfirm={() => {
+          if (announcementToDelete) {
+            deleteAnnouncement(announcementToDelete);
+            setAnnouncementToDelete(null);
+          }
+        }}
+        onCancel={() => setAnnouncementToDelete(null)}
+        title="Delete Official Circular"
+        message="Are you sure you want to permanently delete this announcement? This action is irreversible and the notice will be immediately removed from all student and recruiter notice boards."
+        confirmLabel="Delete Notice"
+        cancelLabel="Cancel"
+        isDestructive={true}
+        type="delete"
+      />
     </div>
   );
 };
