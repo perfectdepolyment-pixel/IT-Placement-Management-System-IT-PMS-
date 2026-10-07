@@ -1,0 +1,6 @@
+{
+  "name": "IT Placement Management System (IT-PMS)",
+  "description": "Unified campus recruitment portal connecting students, recruiters, and placement cell with drive management, profile builder, eligibility checks, and placement analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
